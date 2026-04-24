@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Test 316dev</title>
+<style>
+body{background:#0d1210;color:#e8f0e6;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:20px}
+input{background:#1c2820;border:1px solid rgba(114,190,100,.3);border-radius:8px;padding:10px 14px;color:#e8f0e6;font-size:14px;width:300px;outline:none}
+button{background:linear-gradient(135deg,#72be64,#55a048);border:none;border-radius:10px;padding:13px 30px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;width:300px}
+#result{font-size:14px;color:#72be64;display:none}
+</style>
+</head>
+<body>
+<h2 style="color:#72be64">Test connexion agent</h2>
+<input id="nom" placeholder="Votre nom">
+<input id="email" type="email" placeholder="Votre email">
+<button id="btn">Accéder →</button>
+<div id="result">✅ Bouton fonctionne ! Nom : <span id="rnom"></span></div>
+
+<script>
+document.getElementById("btn").addEventListener("click", function() {
+  var nom   = document.getElementById("nom").value.trim();
+  var email = document.getElementById("email").value.trim();
+  if (!nom || !email) {
+    alert("Renseignez nom et email");
+    return;
+  }
+  document.getElementById("rnom").textContent = nom;
+  document.getElementById("result").style.display = "block";
+});
+</script>
+</body>
+</html>
