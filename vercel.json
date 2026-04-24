@@ -1,33 +1,16 @@
 {
   "version": 2,
+  "builds": [
+    { "src": "api/*.js", "use": "@vercel/node" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
   "routes": [
-    {
-      "src": "/api/chat",
-      "dest": "/api/chat.js"
-    },
-    {
-      "src": "/api/create-checkout",
-      "dest": "/api/create-checkout.js"
-    },
-    {
-      "src": "/api/verify-payment",
-      "dest": "/api/verify-payment.js"
-    },
-    {
-      "src": "/api/save-contact",
-      "dest": "/api/save-contact.js"
-    },
-    {
-      "src": "/agent",
-      "dest": "/public/agent.html"
-    },
-    {
-      "src": "/",
-      "dest": "/public/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
-    }
+    { "src": "/api/chat",            "dest": "/api/chat.js" },
+    { "src": "/api/create-checkout", "dest": "/api/create-checkout.js" },
+    { "src": "/api/verify-payment",  "dest": "/api/verify-payment.js" },
+    { "src": "/api/save-contact",    "dest": "/api/save-contact.js" },
+    { "src": "/agent",               "dest": "/public/agent.html" },
+    { "src": "/",                    "dest": "/public/index.html" },
+    { "src": "/(.*)",                "dest": "/public/$1" }
   ]
 }

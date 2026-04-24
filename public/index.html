@@ -328,6 +328,11 @@ function sendContactForm() {
   const contacts = JSON.parse(localStorage.getItem("316dev_contacts") || "[]");
   contacts.push({ prenom: nom.split(" ")[0], nom: nom.split(" ").slice(1).join(" "), email, tel, societe, interet: "À qualifier", statut: "Formulaire accueil", notes: msg, date: new Date().toLocaleDateString("fr-FR") });
   localStorage.setItem("316dev_contacts", JSON.stringify(contacts));
+    fetch("/api/save-contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nom, email, societe, tel, source: "Formulaire accueil" })
+    }).catch(e => console.warn("Sheet:", e));
   ok.style.display = "block";
   ["ct-nom","ct-email","ct-tel","ct-societe","ct-msg"].forEach(id => document.getElementById(id).value = "");
   // Ouvre le client mail en parallèle

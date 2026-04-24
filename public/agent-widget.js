@@ -232,6 +232,12 @@ function validateCapture() {
   const stored = JSON.parse(localStorage.getItem("316dev_contacts") || "[]");
   stored.push(contact);
   localStorage.setItem("316dev_contacts", JSON.stringify(stored));
+  // Sauvegarde sur Google Sheets
+  fetch("/api/save-contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nom, email, societe, tel, source: "Formulaire agent" })
+  }).catch(e => console.warn("Sheet save:", e));
 
   window._316user = { nom, email, societe };
   setAccess({ nom, email, societe });
@@ -450,6 +456,12 @@ function saveContact() {
   const stored = JSON.parse(localStorage.getItem("316dev_contacts") || "[]");
   stored.push(c);
   localStorage.setItem("316dev_contacts", JSON.stringify(stored));
+  // Sauvegarde sur Google Sheets
+  fetch("/api/save-contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nom, email, societe, tel, source: "Formulaire agent" })
+  }).catch(e => console.warn("Sheet save:", e));
   renderContacts();
   closeModal("addModal");
   ["c-prenom","c-nom","c-email","c-linkedin","c-societe","c-tel-contact","c-notes"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
@@ -476,6 +488,12 @@ function importCSV(e) {
       stored.push({ prenom: get(v,"prenom","first"), nom: get(v,"nom","last","name"), email: get(v,"email","mail"), tel: get(v,"tel","phone"), linkedin: get(v,"linkedin"), societe: get(v,"societe","company","entreprise"), interet: get(v,"interet","dispositif") || "À qualifier", notes: get(v,"notes"), statut: "Importé", date: new Date().toLocaleDateString("fr-FR") });
     }
     localStorage.setItem("316dev_contacts", JSON.stringify(stored));
+  // Sauvegarde sur Google Sheets
+  fetch("/api/save-contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nom, email, societe, tel, source: "Formulaire agent" })
+  }).catch(e => console.warn("Sheet save:", e));
     renderContacts();
   };
   reader.readAsText(file);
