@@ -114,6 +114,7 @@ footer img{height:36px}
     <a class="nav-link" href="#services">Services</a>
     <a class="nav-link" href="#methode">Méthode</a>
     <a class="nav-link" href="#agent">Agent IA</a>
+    <a class="nav-link" href="#contact">Contact</a>
     <a class="nav-link nav-cta" href="agent.html">💬 Tester l'agent</a>
   </div>
 </nav>
@@ -258,6 +259,83 @@ footer img{height:36px}
     <a class="btn-hero-s" href="mailto:contact@316developpement.fr">✉️ Nous contacter</a>
   </div>
 </section>
+
+
+<!-- CONTACT -->
+<section class="section" id="contact" style="padding-top:0">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start">
+    <div>
+      <div class="section-tag">Nous contacter</div>
+      <h2 style="margin-bottom:16px">Parlons de votre projet R&D</h2>
+      <p style="color:var(--text2);font-size:15px;margin-bottom:32px;font-weight:300">Notre équipe est disponible pour analyser vos travaux et estimer votre potentiel CIR/CII. Premier échange gratuit et sans engagement.</p>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:44px;height:44px;border-radius:50%;background:rgba(114,190,100,.15);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📧</div>
+          <div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:2px">Email</div>
+            <a href="mailto:contact@316developpement.fr" style="color:var(--vert);font-weight:500;text-decoration:none;font-size:15px">contact@316developpement.fr</a>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:44px;height:44px;border-radius:50%;background:rgba(114,190,100,.15);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📞</div>
+          <div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:2px">Téléphone</div>
+            <a href="tel:0649475848" style="color:var(--vert);font-weight:500;text-decoration:none;font-size:15px">06 49 47 58 48</a>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:44px;height:44px;border-radius:50%;background:rgba(114,190,100,.15);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📍</div>
+          <div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:2px">Zone d'intervention</div>
+            <span style="font-size:15px">Nouvelle-Aquitaine &amp; national</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:18px">✉️ Demande de contact rapide</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Prénom et Nom *</label>
+          <input id="ct-nom" placeholder="Marie Martin" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none"></div>
+        <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Email *</label>
+          <input id="ct-email" type="email" placeholder="marie@entreprise.fr" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none"></div>
+        <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Téléphone</label>
+          <input id="ct-tel" placeholder="06 XX XX XX XX" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none"></div>
+        <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Société *</label>
+          <input id="ct-societe" placeholder="Acme SAS" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none"></div>
+        <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">Message (optionnel)</label>
+          <textarea id="ct-msg" rows="3" placeholder="Décrivez brièvement vos travaux de R&D…" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;resize:vertical"></textarea></div>
+        <div id="ct-err" style="color:#f87171;font-size:12px;display:none"></div>
+        <div id="ct-ok" style="color:#72be64;font-size:13px;font-weight:500;display:none">✅ Message envoyé ! Nous vous répondons sous 24h.</div>
+        <button onclick="sendContactForm()" style="background:linear-gradient(135deg,#72be64,#55a048);border:none;border-radius:10px;padding:12px;color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">Envoyer ma demande →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function sendContactForm() {
+  const nom    = document.getElementById("ct-nom").value.trim();
+  const email  = document.getElementById("ct-email").value.trim();
+  const societe= document.getElementById("ct-societe").value.trim();
+  const tel    = document.getElementById("ct-tel").value.trim();
+  const msg    = document.getElementById("ct-msg").value.trim();
+  const err    = document.getElementById("ct-err");
+  const ok     = document.getElementById("ct-ok");
+  if (!nom || !email || !societe) { err.textContent = "⚠️ Renseignez les champs obligatoires (*)"; err.style.display = "block"; return; }
+  err.style.display = "none";
+  // Sauvegarde en localStorage
+  const contacts = JSON.parse(localStorage.getItem("316dev_contacts") || "[]");
+  contacts.push({ prenom: nom.split(" ")[0], nom: nom.split(" ").slice(1).join(" "), email, tel, societe, interet: "À qualifier", statut: "Formulaire accueil", notes: msg, date: new Date().toLocaleDateString("fr-FR") });
+  localStorage.setItem("316dev_contacts", JSON.stringify(contacts));
+  ok.style.display = "block";
+  ["ct-nom","ct-email","ct-tel","ct-societe","ct-msg"].forEach(id => document.getElementById(id).value = "");
+  // Ouvre le client mail en parallèle
+  const subject = encodeURIComponent("Demande de contact CIR/CII — " + societe);
+  const body    = encodeURIComponent("Nom : " + nom + "\nEmail : " + email + "\nTél : " + (tel||"—") + "\nSociété : " + societe + "\n\nMessage : " + (msg||"—"));
+  window.open("mailto:contact@316developpement.fr?subject=" + subject + "&body=" + body);
+}
+<\/script>
 
 <!-- FOOTER -->
 <footer>
