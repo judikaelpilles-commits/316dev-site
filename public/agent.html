@@ -204,7 +204,7 @@ td{padding:9px 13px;border-bottom:1px solid rgba(114,190,100,.07)}
           <input id="adminPwd" type="password" placeholder="Mot de passe admin"
             style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;margin-bottom:10px">
           <div id="adminErr" style="color:#f87171;font-size:12px;margin-bottom:10px;display:none">⚠️ Mot de passe incorrect</div>
-          <button onclick="loadContacts()" style="background:linear-gradient(135deg,#72be64,#55a048);border:none;border-radius:8px;padding:10px;width:100%;color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">
+          <button id="adminLoginBtn" style="background:linear-gradient(135deg,#72be64,#55a048);border:none;border-radius:8px;padding:10px;width:100%;color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">
             Accéder aux contacts →
           </button>
         </div>
@@ -527,6 +527,122 @@ function importCSV(e){
     localStorage.setItem("316dev_contacts",JSON.stringify(stored));renderContacts();
   };
   reader.readAsText(file);e.target.value="";
+}
+
+
+// ── CONTACTS (admin — données depuis Google Sheets) ───
+let sheetContacts = [];
+let adminPassword = "";
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Bouton login admin
+  var loginBtn = document.getElementById("adminLoginBtn");
+  if (loginBtn) {
+    loginBtn.addEventListener("click", function() { loadContacts(); });
+  }
+  // Touche Entrée sur le champ mot de passe
+  var pwdInput = document.getElementById("adminPwd");
+  if (pwdInput) {
+    pwdInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") loadContacts();
+    });
+  }
+});
+
+async function loadContacts() {
+  var pwdEl = document.getElementById("adminPwd");
+  var errEl = document.getElementById("adminErr");
+  var btn   = document.getElementById("adminLoginBtn");
+  var pwd   = pwdEl ? pwdEl.value.trim() : "";
+
+  if (!pwd) {
+    if (errEl) { errEl.textContent = "⚠️ Entrez le mot de passe"; errEl.style.display = "block"; }
+    return;
+  }
+
+  if (btn) { btn.textContent = "⏳ Chargement…"; btn.disabled = true; }
+  if (errEl) errEl.style.display = "none";
+
+  try {
+    var r = await fetch("/api/get-contacts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pwd })
+    });
+    var d = await r.json();
+
+    if (!r.ok) {
+      if (errEl) { errEl.textContent = "⚠️ " + (d.error || "Mot de passe incorrect"); errEl.style.display = "block"; }
+      if (btn) { btn.textContent = "Accéder aux contacts →"; btn.disabled = false; }
+      return;
+    }
+
+    adminPassword = pwd;
+    sheetContacts = d.contacts || [];
+    var loginDiv = document.getElementById("adminLogin");
+    var panelDiv = document.getElementById("adminPanel");
+    if (loginDiv) loginDiv.style.display = "none";
+    if (panelDiv) panelDiv.style.display = "flex";
+    renderContacts();
+
+  } catch(e) {
+    if (errEl) { errEl.textContent = "⚠️ Erreur réseau"; errEl.style.display = "block"; }
+    if (btn) { btn.textContent = "Accéder aux contacts →"; btn.disabled = false; }
+  }
+}
+
+async function refreshContacts() {
+  if (!adminPassword) return;
+  try {
+    var r = await fetch("/api/get-contacts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: adminPassword })
+    });
+    var d = await r.json();
+    if (r.ok) { sheetContacts = d.contacts || []; renderContacts(); }
+  } catch(e) { console.error(e); }
+}
+
+function renderContacts() {
+  var empty = document.getElementById("cempty");
+  var table = document.getElementById("ctable");
+  var tbody = document.getElementById("ctbody");
+  var count = document.getElementById("ccount");
+  if (count) count.textContent = sheetContacts.length + " contact(s)";
+  if (!sheetContacts.length) {
+    if (empty) empty.style.display = "block";
+    if (table) table.style.display = "none";
+    return;
+  }
+  if (empty) empty.style.display = "none";
+  if (table) table.style.display = "table";
+  if (!tbody) return;
+  tbody.innerHTML = sheetContacts.map(function(c) {
+    return "<tr>" +
+      "<td style='color:#8fa88a;font-size:11px'>" + (c["Date"]||"—") + "</td>" +
+      "<td><strong>" + (c["Nom"]||"—") + "</strong></td>" +
+      "<td>" + (c["Email"] ? "<a href='mailto:"+c["Email"]+"' style='color:#72be64'>"+c["Email"]+"</a>" : "—") + "</td>" +
+      "<td style='color:#8fa88a'>" + (c["Téléphone"]||"—") + "</td>" +
+      "<td style='color:#8fa88a'>" + (c["Société"]||"—") + "</td>" +
+      "<td style='color:#8fa88a;font-size:11px'>" + (c["Source"]||"—") + "</td>" +
+      "<td style='color:#8fa88a;font-size:11px'>" + (c["Statut"]||"—") + "</td>" +
+      "</tr>";
+  }).join("");
+}
+
+function exportCSV() {
+  if (!sheetContacts.length) { alert("Aucun contact"); return; }
+  var keys = ["Date","Nom","Email","Téléphone","Société","Source","Statut"];
+  var rows = sheetContacts.map(function(c) {
+    return keys.map(function(k) { return '"'+(c[k]||"").replace(/"/g,'""')+'"'; }).join(",");
+  });
+  var csv = [keys.join(",")].concat(rows).join("
+");
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["﻿"+csv], {type:"text/csv"}));
+  a.download = "contacts_316dev.csv";
+  a.click();
 }
 
 // ── STRIPE RETOUR ─────────────────────────────────────
