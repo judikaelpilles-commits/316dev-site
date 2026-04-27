@@ -269,13 +269,13 @@ function showPW(){
   d.className="msg";
   d.innerHTML='<div class="av ai">316</div><div class="bbl"><div style="display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;max-width:340px;padding:6px">'+
     '<div style="font-size:30px">🔒</div>'+
-    '<div style="font-weight:700;font-size:15px">5 échanges gratuits épuisés</div>'+
-    '<div style="font-size:13px;color:var(--t2)">Continuez avec un accès illimité à notre référent.</div>'+
+    '<div style="font-weight:700;font-size:15px">5 echanges gratuits epuises</div>'+
+    '<div style="font-size:13px;color:var(--t2)">Continuez avec un acces illimite à notre référent.</div>'+
     '<div style="background:var(--bg3);border:1px solid var(--b);border-radius:12px;padding:16px;width:100%">'+
     '<div style="font-size:28px;font-weight:800;color:#72be64">9€/mois</div>'+
     '<div style="font-size:12px;color:var(--t2);margin-top:4px">Illimité · Sans engagement</div></div>'+
-    '<button class="pw-btn" id="pw-go">💳 S'abonner pour 9€/mois</button>'+
-    '<div style="font-size:11px;color:#4f5a53">Paiement sécurisé Stripe · Résiliation à tout moment</div>'+
+    '<button class="pw-btn" id="pw-go">💳 S&#039;abonner pour 9€/mois</button>'+
+    '<div style="font-size:11px;color:#4f5a53">Paiement sécurisé Stripe · Sans engagement</div>'+
     '</div></div>';
   c.appendChild(d);c.scrollTop=c.scrollHeight;
   document.getElementById("pw-go").onclick=async function(){
@@ -342,7 +342,7 @@ Secteur:'+s+' Type:'+ty+' Objectif:'+o+' Verrous:'+(document.getElementById("dv"
     var m=text.match(/\{[\s\S]*\}/);
     if(m)renderDiag(JSON.parse(m[0]));
   }catch(e){err.textContent="Erreur : "+e.message;err.style.display="block";}
-  btn.disabled=false;btn.textContent="⚡ Analyser l'éligibilité";
+  btn.disabled=false;btn.textContent="⚡ Analyser eligibilite";
 }
 function renderDiag(r){
   var sc=r.score||0,col=sc>=70?"#72be64":sc>=40?"#f59e0b":"#f87171";
@@ -356,7 +356,7 @@ function renderDiag(r){
     '<div style="height:100%;width:'+sc+'%;background:linear-gradient(90deg,#4f5a53,'+col+');border-radius:4px"></div></div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+
     '<div><div style="font-size:11px;font-weight:700;color:#72be64;margin-bottom:8px">✅ Points forts</div>'+(r.points_forts||[]).map(function(p){return'<div style="font-size:12px;margin-bottom:5px">• '+p+'</div>';}).join('')+'</div>'+
-    '<div><div style="font-size:11px;font-weight:700;color:#f87171;margin-bottom:8px">⚠️ Points d'attention</div>'+(r.points_faibles||[]).map(function(p){return'<div style="font-size:12px;margin-bottom:5px">• '+p+'</div>';}).join('')+'</div></div>'+
+    '<div><div style="font-size:11px;font-weight:700;color:#f87171;margin-bottom:8px">⚠️ Points d&#039;attention</div>'+(r.points_faibles||[]).map(function(p){return'<div style="font-size:12px;margin-bottom:5px">• '+p+'</div>';}).join('')+'</div></div>'+
     '<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;color:#90d183;margin-bottom:8px">🎯 Recommandations</div>'+(r.recommandations||[]).map(function(p){return'<div style="font-size:12px;margin-bottom:5px">→ '+p+'</div>';}).join('')+'</div>'+
     '<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;color:#fbbf24;margin-bottom:8px">📋 Prochaines étapes</div>'+(r.prochaines_etapes||[]).map(function(p,i){return'<div style="font-size:12px;margin-bottom:5px">'+(i+1)+'. '+p+'</div>';}).join('')+'</div>';
   document.getElementById("d-res").style.display="block";
@@ -424,7 +424,7 @@ function doCapture(){
   document.getElementById("agent").style.display="flex";
   refreshCtr();
   var prenom=nom.split(" ")[0];
-  addMsg("ai","Bonjour "+prenom+" !\n\nJe suis votre référent CIR/CII de 316 Développement.\n\n"+(paid()?"Votre accès est illimité ✅":"Vous disposez de "+rem()+" échanges gratuits pour commencer.")+".\n\nPar où souhaitez-vous commencer ?");
+  addMsg("ai","Bonjour "+prenom+" !\n\nJe suis votre référent CIR/CII de 316 Développement.\n\n"+(paid()?"Votre acces illimite ✅":"Vous disposez de "+rem()+" échanges gratuits pour commencer.")+".\n\nPar où souhaitez-vous commencer ?");
 }
 
 // ── STRIPE RETOUR ─────────────────────────────────────
