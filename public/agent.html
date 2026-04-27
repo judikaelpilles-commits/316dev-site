@@ -261,29 +261,7 @@ function refreshCtr() {
 }
 
 // ── CAPTURE ───────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("cap-btn").addEventListener("click", function() {
-    const nom     = document.getElementById("cap-nom").value.trim();
-    const email   = document.getElementById("cap-email").value.trim();
-    const societe = document.getElementById("cap-societe").value.trim();
-    const tel     = document.getElementById("cap-tel").value.trim();
-    const errEl   = document.getElementById("cap-err");
 
-    if (!nom || !email || !societe) {
-      errEl.style.display = "block";
-      return;
-    }
-    errEl.style.display = "none";
-
-    // Sauvegarde localStorage
-    const stored = JSON.parse(localStorage.getItem("316dev_contacts")||"[]");
-    stored.push({
-      prenom: nom.split(" ")[0]||nom,
-      nom: nom.split(" ").slice(1).join(" ")||"",
-      email, societe, tel,
-      statut: "Lead agent",
-      date: new Date().toLocaleDateString("fr-FR")
-    });
     localStorage.setItem("316dev_contacts", JSON.stringify(stored));
 
     // Google Sheets
@@ -299,7 +277,6 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("capScreen").style.display  = "none";
     document.getElementById("agentScreen").style.display = "flex";
 
-    refreshCtr();
     const prenom = nom.split(" ")[0];
     const rem    = remaining();
     addMsg("ai", "Bonjour " + prenom + " ! Je suis votre expert CIR/CII de 316 Développement.\n\n" +
@@ -307,8 +284,6 @@ document.addEventListener("DOMContentLoaded", function() {
       "\n\nPar où souhaitez-vous commencer ?");
   });
 
-  refreshCtr();
-  checkStripeReturn();
 });
 
 // ── API ───────────────────────────────────────────────
@@ -407,14 +382,7 @@ async function send(){
   busy=false; btn.disabled=false;
 }
 
-document.addEventListener("DOMContentLoaded", function(){
-  const inp=document.getElementById("inp");
-  inp.addEventListener("input",function(){
-    this.style.height="auto"; this.style.height=Math.min(this.scrollHeight,110)+"px";
-    const b=document.getElementById("sndbtn");
-    b.disabled=!this.value.trim()||busy;
-    b.className=this.value.trim()&&!busy?"go":"";
-  });
+
   inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
 });
 
@@ -534,11 +502,7 @@ function importCSV(e){
 let sheetContacts = [];
 let adminPassword = "";
 
-document.addEventListener("DOMContentLoaded", function() {
-  // Bouton login admin
-  var loginBtn = document.getElementById("adminLoginBtn");
-  if (loginBtn) {
-    loginBtn.addEventListener("click", function() { loadContacts(); });
+
   }
   // Touche Entrée sur le champ mot de passe
   var pwdInput = document.getElementById("adminPwd");
@@ -657,12 +621,53 @@ async function checkStripeReturn(){
         setA({paid:true,expiresAt:d.expiresAt});
         document.getElementById("capScreen").style.display="none";
         document.getElementById("agentScreen").style.display="flex";
-        refreshCtr();
+
         addMsg("ai","✅ Paiement confirmé ! Votre accès illimité est actif pour 1 mois. Comment puis-je vous aider ?");
       }
     }catch(e){console.error(e);}
   }
 }
+
+
+// ── INIT ────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+document.getElementById("cap-btn").addEventListener("click", function() {
+    const nom     = document.getElementById("cap-nom").value.trim();
+    const email   = document.getElementById("cap-email").value.trim();
+    const societe = document.getElementById("cap-societe").value.trim();
+    const tel     = document.getElementById("cap-tel").value.trim();
+    const errEl   = document.getElementById("cap-err");
+
+    if (!nom || !email || !societe) {
+      errEl.style.display = "block";
+      return;
+    }
+    errEl.style.display = "none";
+
+    // Sauvegarde localStorage
+    const stored = JSON.parse(localStorage.getItem("316dev_contacts")||"[]");
+    stored.push({
+      prenom: nom.split(" ")[0]||nom,
+      nom: nom.split(" ").slice(1).join(" ")||"",
+      email, societe, tel,
+      statut: "Lead agent",
+      date: new Date().toLocaleDateString("fr-FR")
+
+const inp=document.getElementById("inp");
+  inp.addEventListener("input",function(){
+    this.style.height="auto"; this.style.height=Math.min(this.scrollHeight,110)+"px";
+    const b=document.getElementById("sndbtn");
+    b.disabled=!this.value.trim()||busy;
+    b.className=this.value.trim()&&!busy?"go":"";
+
+// Bouton login admin
+  var loginBtn = document.getElementById("adminLoginBtn");
+  if (loginBtn) {
+    loginBtn.addEventListener("click", function() { loadContacts();
+
+  refreshCtr();
+  checkStripeReturn();
+});
 </script>
 </body>
 </html>
