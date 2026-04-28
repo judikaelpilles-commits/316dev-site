@@ -338,8 +338,9 @@ async function runDiag(){
   err.style.display="none";btn.disabled=true;btn.textContent="⏳ Analyse…";
   document.getElementById("d-res").style.display="none";
   if(!paid()){inc();refreshCtr();}
-  var p='Analyse éligibilité CIR/CII, réponds UNIQUEMENT en JSON : {"dispositif":"...","score":50,"montant_estime":"...","points_forts":["..."],"points_faibles":["..."],"recommandations":["..."],"prochaines_etapes":["..."]}
-Secteur:'+s+' Type:'+ty+' Objectif:'+o+' Verrous:'+(document.getElementById("dv").value||"non renseignés");
+  var p = "Analyse eligibilite CIR/CII. Reponds UNIQUEMENT en JSON valide: " +
+    '{"dispositif":"CIR ou CII ou Non eligible","score":50,"montant_estime":"XX euros","points_forts":["..."],"points_faibles":["..."],"recommandations":["..."],"prochaines_etapes":["..."]}' +
+    " Secteur:" + s + " Type:" + ty + " Objectif:" + o + " Verrous:" + (document.getElementById("dv").value || "non renseignes");
   try{
     var text=await callAPI([{role:"user",content:p}]);
     text=text.replace(/```json|```/g,"").trim();
