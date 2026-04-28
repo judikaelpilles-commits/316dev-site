@@ -7,6 +7,7 @@
     { "src": "/api/save-contact",    "dest": "/api/save-contact.js" },
     { "src": "/api/get-contacts",    "dest": "/api/get-contacts.js" },
     { "src": "/agent",               "dest": "/agent.html" },
+    { "src": "/agent.html",          "dest": "/agent.html" },
     { "src": "/",                    "dest": "/index.html" },
     { "src": "/(.*)",                "dest": "/$1" }
   ]
