@@ -1,6 +1,4 @@
-// api/chat.js — Proxy sécurisé Vercel
-// La clé API Anthropic reste côté serveur, jamais exposée au navigateur
-
+// api/chat.js — retourne tokens_used pour comptage cote client
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -27,12 +25,25 @@ export default async function handler(req, res) {
         messages,
       }),
     });
+
     if (!response.ok) {
       const err = await response.text();
       return res.status(response.status).json({ error: err });
     }
+
     const data = await response.json();
-    return res.status(200).json({ text: data.content?.[0]?.text ?? "" });
+    const text = data.content?.[0]?.text ?? "";
+
+    // Retourne tokens utilises pour comptage cote client
+    const input_tokens  = data.usage?.input_tokens  || 0;
+    const output_tokens = data.usage?.output_tokens || 0;
+    const total_tokens  = input_tokens + output_tokens;
+
+    // Cout en euros (Haiku: input 0.25$/M, output 1.25$/M)
+    const cost_eur = ((input_tokens * 0.25 + output_tokens * 1.25) / 1_000_000) * 0.93;
+
+    return res.status(200).json({ text, tokens_used: total_tokens, cost_eur });
+
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
