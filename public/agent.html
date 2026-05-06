@@ -132,7 +132,7 @@ td{padding:9px 13px;border-bottom:1px solid rgba(114,190,100,.07)}
 <div id="agent">
   <div class="sb" id="sb">
     <div class="sbt">Thèmes</div>
-    <button class="sbtn" onclick="ask('Critères eligibilite CIR CII selon Frascati')">🎯 Eligibilite CIR/CII</button>
+    <button class="sbtn" onclick="ask('Critères éligibilité CIR CII selon Frascati')">🎯 Éligibilité CIR/CII</button>
     <button class="sbtn" onclick="ask('Comment rédiger des verrous technologiques')">🔒 Verrous technologiques</button>
     <button class="sbtn" onclick="ask('Dépenses éligibles au CIR détail')">💶 Dépenses éligibles</button>
     <button class="sbtn" onclick="ask('État de l art admissible pour le CIR')">📚 État de l'art</button>
@@ -149,7 +149,7 @@ td{padding:9px 13px;border-bottom:1px solid rgba(114,190,100,.07)}
     </div>
     <div class="msgs" id="msgs"></div>
     <div class="chips" id="chips">
-      <button class="chip" onclick="ask('Mes travaux sont-ils éligibles au CIR')">🎯 Tester eligibilite</button>
+      <button class="chip" onclick="ask('Mes travaux sont-ils éligibles au CIR')">🎯 Tester éligibilité</button>
       <button class="chip" onclick="ask('Comment structurer mes verrous technologiques Frascati')">🔒 Verrous Frascati</button>
       <button class="chip" onclick="ask('Quelles dépenses inclure dans mon CIR')">💶 Dépenses CIR</button>
       <button class="chip" onclick="ask('Différence CIR et CII laquelle choisir')">⚡ CIR vs CII</button>
@@ -161,7 +161,7 @@ td{padding:9px 13px;border-bottom:1px solid rgba(114,190,100,.07)}
   </div>
 
   <div class="panel dp" id="p-diag">
-    <div><div style="font-weight:800;font-size:20px">🔍 Diagnostic d'eligibilite</div><div style="color:var(--t2);font-size:13px;margin-top:4px">Analyse CIR/CII préliminaire.</div></div>
+    <div><div style="font-weight:800;font-size:20px">🔍 Diagnostic d'éligibilité</div><div style="color:var(--t2);font-size:13px;margin-top:4px">Analyse CIR/CII préliminaire.</div></div>
     <div class="g2">
       <div class="card"><div class="ct">🏢 Société</div>
         <label>Secteur *</label>
@@ -178,7 +178,7 @@ td{padding:9px 13px;border-bottom:1px solid rgba(114,190,100,.07)}
     </div>
     <div class="card"><div class="ct">🔒 Verrous</div><textarea class="ta" id="dv" style="width:100%;min-height:80px" placeholder="Incertitudes scientifiques ou techniques…"></textarea></div>
     <div id="d-err" style="color:#f87171;font-size:13px;display:none"></div>
-    <div><button class="pbtn" id="d-btn">⚡ Analyser l'eligibilite</button></div>
+    <div><button class="pbtn" id="d-btn">⚡ Analyser l'éligibilité</button></div>
     <div class="card" id="d-res" style="display:none"><div class="ct">📊 Résultat</div><div id="d-cnt"></div></div>
   </div>
 
@@ -215,7 +215,9 @@ td{padding:9px 13px;border-bottom:1px solid rgba(114,190,100,.07)}
 // ===================================================
 // TOUT LE CODE EST ICI - PAS DE D?PENDANCE EXTERNE
 // ===================================================
-var FREE = 5;
+var FREE = 3;
+var PLAN_BUDGETS={starter:3.0,pro:10.0};
+var WARN_PCT=0.80;
 var SYS = "Tu es le referent expert CIR/CII en ligne de 316 Developpement. Aide les industriels sur le Cr?dit Imp?t Recherche (art 244 quater B CGI) et le Cr?dit Imp?t Innovation. Taux : CIR 30% jusqu ? 100M, CII 30% jusqu ? 400K PME. R?ponds en fran?ais avec terminologie DGFiP/Frascati. Sois pr?cis et concret.";
 var hist = [], busy = false, admPwd = "", sheetData = [];
 
@@ -226,12 +228,25 @@ function paid(){var a=getA();return a.paid&&a.exp&&Date.now()<a.exp;}
 function cnt(){return getA().n||0;}
 function inc(){var n=cnt()+1;setA({n:n});return n;}
 function rem(){return Math.max(0,FREE-cnt());}
+function getPlan(){return getA().plan||"starter";}
+function getBudget(){return PLAN_BUDGETS[getPlan()]||3.0;}
+function getCostUsed(){return getA().cost_used||0;}
+function addCost(c){var n=getCostUsed()+c;setA({cost_used:n});return n;}
+function budgetExhausted(){return paid()&&getCostUsed()>=getBudget();}
+function budgetWarning(){return paid()&&getCostUsed()>=getBudget()*WARN_PCT&&getCostUsed()<getBudget();}
+function budgetPct(){return paid()?Math.min(100,Math.round(getCostUsed()/getBudget()*100)):0;}
 function refreshCtr(){
   var el=document.getElementById("ctr"),lk=document.getElementById("uplk");
   if(!el)return;
-  if(paid()){el.textContent="OK Acces illimite";el.style.color="var(--v)";if(lk)lk.style.display="none";return;}
+  if(paid()){
+    if(budgetExhausted()){el.textContent="Budget epuise";el.style.color="#f87171";if(lk)lk.style.display="none";return;}
+    el.textContent=getCostUsed().toFixed(2)+" / "+getBudget().toFixed(0)+" EUR ("+budgetPct()+"%)";
+    el.style.color=budgetPct()>=80?"#f59e0b":"var(--v)";
+    if(lk)lk.style.display="none";
+    return;
+  }
   var r=rem();
-  el.textContent=r>0?r+" echange"+(r>1?"s":"")+" gratuit"+(r>1?"s":"")+" restant"+(r>1?"s":""):"Limite atteinte";
+  el.textContent=r>0?r+" echange(s) gratuit(s)":"Limite atteinte";
   el.style.color=r<=1?"#f87171":r<=2?"#f59e0b":"var(--t2)";
   if(lk)lk.style.display=r<=2?"inline":"none";
 }
@@ -240,7 +255,7 @@ function refreshCtr(){
 async function callAPI(msgs){
   var r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:msgs,system:SYS,max_tokens:900})});
   if(!r.ok)throw new Error("Erreur "+r.status);
-  var d=await r.json();if(d.error)throw new Error(d.error);return d.text||"";
+  var d=await r.json();if(d.error)throw new Error(d.error);if(d.cost_eur&&paid()){addCost(d.cost_eur);refreshCtr();if(budgetWarning()&&!getA().warned){setA({warned:true});addMsg("ai","Attention: 80% du budget consomme.");}}return d.text||"";
 }
 
 // -- FORMAT -------------------------------------------
@@ -264,6 +279,21 @@ function addTyping(){
   d.innerHTML='<div class="av ai">316</div><div class="bbl"><div class="td"><span></span><span></span><span></span></div></div>';
   c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
+function showBudgetExhausted(){
+  var c=document.getElementById("msgs"),d=document.createElement("div");
+  d.className="msg";
+  var h='<div class="av">316</div><div class="bbl">';
+  h+='<div style="text-align:center;padding:8px">';
+  h+='<div style="font-size:28px;margin-bottom:10px">&#9888;</div>';
+  h+='<div style="font-weight:700;font-size:15px;margin-bottom:8px">Budget mensuel epuise</div>';
+  h+='<div style="font-size:13px;color:var(--t2);margin-bottom:12px">Votre quota API est atteint. Renouvellement auto le mois prochain.</div>';
+  if(getPlan()==="starter"){h+='<button class="pwbtn" id="upg-btn">Passer au forfait Pro 20 euros/mois</button>';}
+  h+='</div></div>';
+  d.innerHTML=h;c.appendChild(d);c.scrollTop=c.scrollHeight;
+  var upg=document.getElementById("upg-btn");
+  if(upg){upg.onclick=async function(){this.textContent="Redirection...";this.disabled=true;try{var a=getA();var r=await fetch("/api/create-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:a.email||"",nom:a.nom||"",societe:a.societe||"",plan:"pro"})});var dd=await r.json();if(dd.url)window.location.href=dd.url;else throw new Error(dd.error);}catch(e){this.textContent="Erreur";this.disabled=false;}};}
+}
+
 function showPW(){
   var c=document.getElementById("msgs"),d=document.createElement("div");
   d.className="msg";
@@ -283,20 +313,19 @@ function showPW(){
     '</div></div>'
   ].join("");
   c.appendChild(d);c.scrollTop=c.scrollHeight;
-  document.getElementById("pw-go").onclick=async function(){
-    this.textContent="Redirection...";this.disabled=true;
-    try{
-      var a=getA();
-      var r=await fetch("/api/create-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:a.email||"",nom:a.nom||"",societe:a.societe||""})});
-      var d=await r.json();if(d.url)window.location.href=d.url;else throw new Error(d.error||"Erreur");
-    }catch(e){this.textContent="Erreur";this.disabled=false;}
-  };
+  async function goPay(plan,btnId){var btn=document.getElementById(btnId);if(!btn)return;btn.textContent="...";btn.disabled=true;try{var a=getA();var r=await fetch("/api/create-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:a.email||"",nom:a.nom||"",societe:a.societe||"",plan:plan})});var dd=await r.json();if(dd.url)window.location.href=dd.url;else throw new Error(dd.error||"Erreur");}catch(e){btn.textContent="Erreur";btn.disabled=false;}}
+  var ps=document.getElementById("pw-starter");if(ps)ps.onclick=function(){goPay("starter","pw-starter");};
+  var pp=document.getElementById("pw-pro");if(pp)pp.onclick=function(){goPay("pro","pw-pro");};
+  // legacy pw-go
+  var pg=document.getElementById("pw-go");
+  if(pg){pg.onclick=function(){goPay("starter","pw-go");};}
 }
 
 function ask(t){document.getElementById("inp").value=t;doSend();}
 async function doSend(){
   var inp=document.getElementById("inp"),t=inp.value.trim();
   if(!t||busy)return;
+  if(paid()&&budgetExhausted()){showBudgetExhausted();return;}
   if(!paid()&&cnt()>=FREE){showPW();return;}
   busy=true;
   document.getElementById("chips").style.display="none";
@@ -441,7 +470,7 @@ async function checkStripe(){
       var r=await fetch("/api/verify-payment",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sessionId:p.get("session_id")})});
       var d=await r.json();
       if(d.paid){
-        setA({paid:true,exp:d.expiresAt});
+        setA({paid:true,exp:d.expiresAt,plan:d.plan||"starter",cost_used:0,warned:false});
         document.getElementById("cap").style.display="none";
         document.getElementById("agent").style.display="flex";
         refreshCtr();
